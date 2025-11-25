@@ -78,14 +78,26 @@ const Post = ({ post, onVote }) => {
     );
 };
 
+import { useNavigate } from 'react-router-dom';
+
 const Home = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/auth');
+        }
+    }, [navigate]);
 
     const fetchPosts = async () => {
         console.log('fetchPosts called');
         try {
             const token = localStorage.getItem('token');
+            if (!token) return; // Stop if no token (will redirect via useEffect)
+
             console.log('Token in Home:', token);
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
                 headers: {
@@ -110,7 +122,7 @@ const Home = () => {
     const handleVote = async (postId, optionIndex) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:5000/api/posts/${postId}/vote`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${postId}/vote`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

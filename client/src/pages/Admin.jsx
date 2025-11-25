@@ -11,6 +11,11 @@ const Admin = () => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/auth');
+            return;
+        }
         if (user.username !== 'admin') {
             navigate('/');
             return;
