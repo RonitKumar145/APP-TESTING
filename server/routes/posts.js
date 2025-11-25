@@ -18,6 +18,20 @@ router.get('/', auth, async (req, res) => {
     }
 });
 
+// Get posts by user ID
+router.get('/user/:userId', auth, async (req, res) => {
+    try {
+        const posts = await Post.find({ user: req.params.userId })
+            .sort({ createdAt: -1 })
+            .populate('user', 'username')
+            .populate('comments.user', 'username');
+        res.json(posts);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
 // Create a post (with optional file/image)
 router.post('/', auth, upload.single('file'), async (req, res) => {
     try {

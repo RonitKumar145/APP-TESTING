@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Auth from './pages/Auth';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
-import PlaceholderPage from './pages/PlaceholderPage';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
       <Route path="/messages" element={<PlaceholderPage title="Messages" />} />
       <Route path="/bookmarks" element={<PlaceholderPage title="Bookmarks" />} />
       <Route path="/lists" element={<PlaceholderPage title="Lists" />} />
-      <Route path="/profile" element={<PlaceholderPage title="Profile" />} />
+      <Route path="/profile" element={<Profile />} />
       <Route path="/more" element={<PlaceholderPage title="More" />} />
     </Routes>
   );
