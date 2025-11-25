@@ -33,10 +33,10 @@ const Layout = ({ children }) => {
     }, [currentUser.username]);
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white pb-16 md:pb-0">
             <div className="container mx-auto max-w-7xl flex">
-                {/* Sidebar */}
-                <div className="w-1/4 h-screen sticky top-0 p-4 flex flex-col justify-between border-r border-gray-100">
+                {/* Sidebar (Desktop) */}
+                <div className="hidden md:flex w-1/4 h-screen sticky top-0 p-4 flex-col justify-between border-r border-gray-100">
                     <div className="space-y-4">
                         <div className="p-3 w-min hover:bg-blue-50 rounded-full transition-colors cursor-pointer">
                             <h1 className="text-3xl font-black text-primary">UNI</h1>
@@ -73,7 +73,7 @@ const Layout = ({ children }) => {
                 </div>
 
                 {/* Main Content */}
-                <div className="w-1/2 border-r border-gray-100 min-h-screen">
+                <div className="w-full md:w-1/2 border-r border-gray-100 min-h-screen">
                     {children}
                 </div>
 
@@ -109,6 +109,25 @@ const Layout = ({ children }) => {
                         )}
                     </div>
                 </div>
+            </div>
+
+            {/* Mobile Bottom Navigation */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around p-3 z-50">
+                <Link to="/" className={`p-2 rounded-full ${location.pathname === '/' ? 'text-primary' : 'text-gray-500'}`}>
+                    <Home size={24} />
+                </Link>
+                <Link to="/explore" className={`p-2 rounded-full ${location.pathname === '/explore' ? 'text-primary' : 'text-gray-500'}`}>
+                    <Hash size={24} />
+                </Link>
+                <Link to="/notifications" className={`p-2 rounded-full ${location.pathname === '/notifications' ? 'text-primary' : 'text-gray-500'}`}>
+                    <Bell size={24} />
+                </Link>
+                <Link to="/messages" className={`p-2 rounded-full ${location.pathname === '/messages' ? 'text-primary' : 'text-gray-500'}`}>
+                    <Mail size={24} />
+                </Link>
+                <button onClick={handleLogout} className="p-2 rounded-full text-gray-500 hover:text-red-500">
+                    <LogOut size={24} />
+                </button>
             </div>
         </div>
     );
