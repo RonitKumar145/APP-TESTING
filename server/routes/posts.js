@@ -10,7 +10,8 @@ router.get('/', auth, async (req, res) => {
     try {
         const posts = await Post.find()
             .sort({ createdAt: -1 })
-            .populate('user', 'username');
+            .populate('user', 'username')
+            .populate('comments.user', 'username');
         res.json(posts);
     } catch (err) {
         res.status(500).json({ message: 'Server Error' });
@@ -125,6 +126,34 @@ router.put('/:id/like', auth, async (req, res) => {
 
         await post.save();
         res.json(post.likes);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// Add a comment
+router.post('/:id/comment', auth, async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id);
+
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        const newComment = {
+            text: req.body.text,
+            user: req.user.id
+        };
+
+        post.comments.unshift(newComment);
+
+        await post.save();
+
+        // Populate the user of the new comment to return it
+        await post.populate('comments.user', 'username');
+
+        res.json(post.comments);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server Error' });

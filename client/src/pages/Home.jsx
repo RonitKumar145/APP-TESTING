@@ -7,8 +7,17 @@ import { MessageCircle, Repeat, Heart, Share, FileText } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 const Post = ({ post, onVote, onLike, onComment, onShare, currentUser }) => {
-    const { user, content, createdAt, likes, poll, imageUrl, fileUrl, fileName } = post;
+    const { user, content, createdAt, likes, poll, imageUrl, fileUrl, fileName, comments } = post;
     const isLiked = likes && currentUser ? likes.includes(currentUser._id) : false;
+    const [showComments, setShowComments] = useState(false);
+    const [commentText, setCommentText] = useState('');
+
+    const handleCommentSubmit = (e) => {
+        e.preventDefault();
+        if (!commentText.trim()) return;
+        onComment(post._id, commentText);
+        setCommentText('');
+    };
 
     return (
         <div className="border-b border-gray-100 p-4 hover:bg-gray-50 transition-colors cursor-pointer">
@@ -51,13 +60,13 @@ const Post = ({ post, onVote, onLike, onComment, onShare, currentUser }) => {
 
                     <div className="flex justify-between text-gray-500 max-w-md mt-3">
                         <button
-                            onClick={(e) => { e.stopPropagation(); onComment(post._id); }}
+                            onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
                             className="flex items-center space-x-2 hover:text-blue-500 group"
                         >
                             <div className="p-2 group-hover:bg-blue-50 rounded-full transition-colors">
                                 <MessageCircle size={18} />
                             </div>
-                            <span className="text-sm">0</span>
+                            <span className="text-sm">{comments?.length || 0}</span>
                         </button>
                         <button className="flex items-center space-x-2 hover:text-green-500 group">
                             <div className="p-2 group-hover:bg-green-50 rounded-full transition-colors">
@@ -83,6 +92,43 @@ const Post = ({ post, onVote, onLike, onComment, onShare, currentUser }) => {
                             </div>
                         </button>
                     </div>
+
+                    {/* Comments Section */}
+                    {showComments && (
+                        <div className="mt-4 pt-4 border-t border-gray-100" onClick={(e) => e.stopPropagation()}>
+                            <form onSubmit={handleCommentSubmit} className="flex space-x-2 mb-4">
+                                <input
+                                    type="text"
+                                    value={commentText}
+                                    onChange={(e) => setCommentText(e.target.value)}
+                                    placeholder="Post your reply"
+                                    className="flex-1 bg-gray-100 rounded-full px-4 py-2 outline-none focus:ring-2 focus:ring-primary/50"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={!commentText.trim()}
+                                    className="bg-primary text-white px-4 py-2 rounded-full font-bold disabled:opacity-50"
+                                >
+                                    Reply
+                                </button>
+                            </form>
+
+                            <div className="space-y-4">
+                                {comments && comments.map((comment, index) => (
+                                    <div key={index} className="flex space-x-3">
+                                        <div className="w-8 h-8 bg-gray-300 rounded-full flex-shrink-0"></div>
+                                        <div>
+                                            <div className="flex items-center space-x-2">
+                                                <span className="font-bold text-sm">{comment.user?.username || 'Unknown'}</span>
+                                                <span className="text-gray-500 text-xs">{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span>
+                                            </div>
+                                            <p className="text-gray-800 text-sm">{comment.text}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -170,8 +216,24 @@ const Home = () => {
         }
     };
 
-    const handleComment = (postId) => {
-        alert("Comments coming soon!");
+    const handleComment = async (postId, text) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${postId}/comment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify({ text })
+            });
+
+            if (response.ok) {
+                fetchPosts();
+            }
+        } catch (error) {
+            console.error('Comment Error:', error);
+        }
     };
 
     const handleShare = (postId) => {
