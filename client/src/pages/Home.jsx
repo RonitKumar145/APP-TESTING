@@ -87,7 +87,7 @@ const Home = () => {
         try {
             const token = localStorage.getItem('token');
             console.log('Token in Home:', token);
-            const response = await fetch('http://localhost:5000/api/posts', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
                 headers: {
                     'x-auth-token': token
                 }

@@ -51,7 +51,7 @@ const CreatePost = ({ onPostCreated }) => {
         }
 
         try {
-            const response = await fetch('http://localhost:5000/api/posts', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
                 method: 'POST',
                 headers: {
                     'x-auth-token': token
@@ -171,7 +171,7 @@ const CreatePost = ({ onPostCreated }) => {
                                 }`}
                             disabled={!content.trim() && !(showPoll && pollOptions[0]) && !file}
                         >
-                            Tweet
+                            Upload
                         </button>
                     </div>
                 </div>

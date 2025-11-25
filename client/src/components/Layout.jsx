@@ -12,6 +12,26 @@ const Layout = ({ children }) => {
         navigate('/auth');
     };
 
+    const [usersToFollow, setUsersToFollow] = React.useState([]);
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+    React.useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/users`);
+                if (response.ok) {
+                    const data = await response.json();
+                    // Filter out current user and limit to 3-5
+                    const filtered = data.filter(u => u.username !== currentUser.username).slice(0, 4);
+                    setUsersToFollow(filtered);
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+        fetchUsers();
+    }, [currentUser.username]);
+
     return (
         <div className="min-h-screen bg-white">
             <div className="container mx-auto max-w-7xl flex">
@@ -34,7 +54,7 @@ const Layout = ({ children }) => {
                         </nav>
 
                         <button className="bg-primary hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full w-full shadow-lg transition-all transform hover:scale-105">
-                            Tweet
+                            Upload
                         </button>
                     </div>
 
@@ -80,8 +100,13 @@ const Layout = ({ children }) => {
 
                     <div className="bg-gray-50 rounded-2xl p-4">
                         <h2 className="font-bold text-xl mb-4">Who to follow</h2>
-                        <FollowSuggestion name="Computer Science Dept" username="@cs_dept" />
-                        <FollowSuggestion name="Student Council" username="@council" />
+                        {usersToFollow.length > 0 ? (
+                            usersToFollow.map(user => (
+                                <FollowSuggestion key={user._id} name={user.username} username={`@${user.username}`} />
+                            ))
+                        ) : (
+                            <p className="text-gray-500 text-sm">No users to follow</p>
+                        )}
                     </div>
                 </div>
             </div>
@@ -96,30 +121,54 @@ const SidebarItem = ({ icon, text, to, active }) => (
     </Link>
 );
 
-const TrendingItem = ({ category, topic, tweets }) => (
-    <div className="py-3 hover:bg-gray-100 px-2 -mx-2 rounded-lg cursor-pointer transition-colors">
-        <p className="text-xs text-gray-500 flex justify-between">
-            <span>{category}</span>
-            <MoreHorizontal size={14} />
-        </p>
-        <p className="font-bold text-secondary mt-0.5">{topic}</p>
-        <p className="text-xs text-gray-500 mt-0.5">{tweets} Tweets</p>
-    </div>
-);
+const TrendingItem = ({ category, topic, tweets }) => {
+    const navigate = useNavigate();
 
-const FollowSuggestion = ({ name, username }) => (
-    <div className="flex items-center justify-between py-3 hover:bg-gray-100 px-2 -mx-2 rounded-lg cursor-pointer transition-colors">
-        <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-            <div>
-                <p className="font-bold text-sm hover:underline">{name}</p>
-                <p className="text-gray-500 text-sm">{username}</p>
-            </div>
+    const handleClick = () => {
+        // Navigate to explore with search query (placeholder for now)
+        navigate('/explore');
+    };
+
+    return (
+        <div onClick={handleClick} className="py-3 hover:bg-gray-100 px-2 -mx-2 rounded-lg cursor-pointer transition-colors">
+            <p className="text-xs text-gray-500 flex justify-between">
+                <span>{category}</span>
+                <MoreHorizontal size={14} />
+            </p>
+            <p className="font-bold text-secondary mt-0.5">{topic}</p>
+            <p className="text-xs text-gray-500 mt-0.5">{tweets} Tweets</p>
         </div>
-        <button className="bg-black text-white px-4 py-1.5 rounded-full text-sm font-bold hover:bg-gray-800 transition-colors">
-            Follow
-        </button>
-    </div>
-);
+    );
+};
+
+const FollowSuggestion = ({ name, username }) => {
+    const [isFollowing, setIsFollowing] = React.useState(false);
+
+    const handleFollow = (e) => {
+        e.stopPropagation();
+        setIsFollowing(!isFollowing);
+    };
+
+    return (
+        <div className="flex items-center justify-between py-3 hover:bg-gray-100 px-2 -mx-2 rounded-lg cursor-pointer transition-colors">
+            <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                <div>
+                    <p className="font-bold text-sm hover:underline">{name}</p>
+                    <p className="text-gray-500 text-sm">{username}</p>
+                </div>
+            </div>
+            <button
+                onClick={handleFollow}
+                className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${isFollowing
+                    ? 'bg-white border border-gray-300 text-black hover:bg-red-50 hover:text-red-600 hover:border-red-200'
+                    : 'bg-black text-white hover:bg-gray-800'
+                    }`}
+            >
+                {isFollowing ? 'Following' : 'Follow'}
+            </button>
+        </div>
+    );
+};
 
 export default Layout;

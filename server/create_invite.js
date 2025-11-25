@@ -7,10 +7,14 @@ dotenv.config();
 mongoose.connect(process.env.MONGODB_URI)
     .then(async () => {
         console.log('Connected to DB');
-        const code = 'TEST12';
+        // Generate a random 6-character alphanumeric code
+        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+
         const newInvite = new InviteCode({ code });
         await newInvite.save();
-        console.log('Invite Code Created:', code);
+        console.log('\n==================================================');
+        console.log('🎉 NEW INVITE CODE GENERATED: ' + code);
+        console.log('==================================================\n');
         process.exit();
     })
     .catch(err => {

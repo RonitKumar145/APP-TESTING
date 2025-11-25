@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const InviteCode = require('../models/InviteCode');
+const InviteRequest = require('../models/InviteRequest');
 
 // Register
 router.post('/register', async (req, res) => {
@@ -88,6 +89,43 @@ router.post('/generate-invite', async (req, res) => {
         res.json({ code });
     } catch (err) {
         res.status(500).json({ message: 'Error generating code' });
+    }
+});
+
+// Request Invite
+router.post('/request-invite', async (req, res) => {
+    const { email, reason } = req.body;
+    try {
+        const existingRequest = await InviteRequest.findOne({ email });
+        if (existingRequest) {
+            return res.status(400).json({ message: 'Request already pending for this email' });
+        }
+
+        const newRequest = new InviteRequest({ email, reason });
+        await newRequest.save();
+        res.status(201).json({ message: 'Request submitted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// Get Invite Requests (Admin only)
+router.get('/invite-requests', async (req, res) => {
+    try {
+        const requests = await InviteRequest.find().sort({ createdAt: -1 });
+        res.json(requests);
+    } catch (err) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// Get all users (for Who to Follow)
+router.get('/users', async (req, res) => {
+    try {
+        const users = await User.find().select('username _id');
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: 'Server Error' });
     }
 });
 
