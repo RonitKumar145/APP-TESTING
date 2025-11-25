@@ -233,6 +233,7 @@ const Home = () => {
             }
         } catch (error) {
             console.error('Comment Error:', error);
+            alert('Failed to post comment. Please check your connection or try again.');
         }
     };
 
