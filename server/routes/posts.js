@@ -89,13 +89,44 @@ router.post('/:id/vote', auth, async (req, res) => {
             return res.status(400).json({ message: 'Invalid option' });
         }
 
-        post.poll.options[optionIndex].votes++;
+        // Use atomic update to ensure data consistency
+        post.poll.options[optionIndex].votes = (post.poll.options[optionIndex].votes || 0) + 1;
         post.poll.voters.push(req.user.id);
+
+        // Mark the path as modified to ensure mongoose saves the nested change
+        post.markModified('poll');
 
         await post.save();
         res.json(post.poll);
 
     } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// Like/Unlike a post
+router.put('/:id/like', auth, async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id);
+
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        // Check if the post has already been liked
+        if (post.likes.filter(like => like.toString() === req.user.id).length > 0) {
+            // Get remove index
+            const removeIndex = post.likes.map(like => like.toString()).indexOf(req.user.id);
+            post.likes.splice(removeIndex, 1);
+        } else {
+            post.likes.unshift(req.user.id);
+        }
+
+        await post.save();
+        res.json(post.likes);
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ message: 'Server Error' });
     }
 });
