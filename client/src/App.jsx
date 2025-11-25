@@ -4,6 +4,7 @@ import Auth from './pages/Auth';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
 import Profile from './pages/Profile';
+import PlaceholderPage from './pages/PlaceholderPage';
 
 function App() {
   return (
