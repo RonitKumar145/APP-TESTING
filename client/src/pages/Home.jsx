@@ -230,6 +230,9 @@ const Home = () => {
 
             if (response.ok) {
                 fetchPosts();
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Failed to post comment');
             }
         } catch (error) {
             console.error('Comment Error:', error);
