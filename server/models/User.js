@@ -13,6 +13,15 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 6
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        lowercase: true
+    },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
     inviteCodeUsed: {
         type: String,
         required: true

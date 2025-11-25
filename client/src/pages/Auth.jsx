@@ -74,131 +74,49 @@ const Auth = () => {
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <h1 className="text-5xl font-black text-primary mb-4">UNI GUYS</h1>
-                    <h2 className="text-2xl font-bold text-secondary">
-                        {isLogin ? 'Sign in to UNI GUYS' : 'Join UNI GUYS'}
-                    </h2>
-                </div>
-
-                <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <h3 className="text-2xl font-bold mb-4">Request Access</h3>
+                    <p className="text-gray-600 mb-6">Tell us why you want to join UNI GUYS.</p>
+                    <form onSubmit={handleRequestSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                             <input
-                                type="text"
-                                name="username"
-                                value={formData.username}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                placeholder="@username"
+                                type="email"
                                 required
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                                placeholder="your@email.com"
+                                value={requestData.email}
+                                onChange={(e) => setRequestData({ ...requestData, email: e.target.value })}
                             />
                         </div>
-
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                            <input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                placeholder="Password"
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+                            <textarea
                                 required
-                            />
+                                rows="3"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none resize-none"
+                                placeholder="I'm a cool student..."
+                                value={requestData.reason}
+                                onChange={(e) => setRequestData({ ...requestData, reason: e.target.value })}
+                            ></textarea>
                         </div>
-
-                        {!isLogin && (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Invite Code</label>
-                                <input
-                                    type="text"
-                                    name="inviteCode"
-                                    value={formData.inviteCode}
-                                    onChange={handleChange}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                    placeholder="Enter your invite code"
-                                    required
-                                />
-                                <p className="text-xs text-gray-500 mt-1">Registration is invite-only.</p>
-                            </div>
-                        )}
-
-                        <button
-                            type="submit"
-                            className="w-full bg-primary hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-full transition-colors shadow-md"
-                        >
-                            {isLogin ? 'Sign In' : 'Create Account'}
-                        </button>
-                    </form>
-
-                    <div className="mt-6 text-center space-y-4">
-                        <p className="text-gray-600">
-                            {isLogin ? "Don't have an account?" : "Already have an account?"}
+                        <div className="flex space-x-3 pt-2">
                             <button
-                                onClick={() => setIsLogin(!isLogin)}
-                                className="text-primary font-bold ml-2 hover:underline"
+                                type="button"
+                                onClick={() => setShowRequestModal(false)}
+                                className="flex-1 py-2 border border-gray-300 rounded-full hover:bg-gray-50 font-bold"
                             >
-                                {isLogin ? 'Sign up' : 'Sign in'}
+                                Cancel
                             </button>
-                        </p>
-
-                        <button
-                            onClick={() => setShowRequestModal(true)}
-                            className="text-sm text-gray-500 hover:text-primary underline"
-                        >
-                            Don't have an invite code? Request one
-                        </button>
-                    </div>
+                            <button
+                                type="submit"
+                                className="flex-1 py-2 bg-primary text-white rounded-full hover:bg-blue-600 font-bold"
+                            >
+                                Submit Request
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-            {/* Request Invite Modal */}
-            {showRequestModal && (
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
-                        <h3 className="text-2xl font-bold mb-4">Request Access</h3>
-                        <p className="text-gray-600 mb-6">Tell us why you want to join UNI GUYS.</p>
-                        <form onSubmit={handleRequestSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input
-                                    type="email"
-                                    required
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
-                                    placeholder="your@email.com"
-                                    value={requestData.email}
-                                    onChange={(e) => setRequestData({ ...requestData, email: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
-                                <textarea
-                                    required
-                                    rows="3"
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none resize-none"
-                                    placeholder="I'm a cool student..."
-                                    value={requestData.reason}
-                                    onChange={(e) => setRequestData({ ...requestData, reason: e.target.value })}
-                                ></textarea>
-                            </div>
-                            <div className="flex space-x-3 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowRequestModal(false)}
-                                    className="flex-1 py-2 border border-gray-300 rounded-full hover:bg-gray-50 font-bold"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 py-2 bg-primary text-white rounded-full hover:bg-blue-600 font-bold"
-                                >
-                                    Submit Request
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
             )}
         </div>
     );
