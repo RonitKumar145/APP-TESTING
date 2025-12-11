@@ -1,0 +1,16 @@
+{
+    "name": "uni-guys-app",
+    "version": "1.0.0",
+    "description": "Root package for Uni Guys application",
+    "scripts": {
+        "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+        "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+        "start": "concurrently \"npm run start --prefix server\" \"npm run build --prefix client\""
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "concurrently": "^8.2.2"
+    }
+}
